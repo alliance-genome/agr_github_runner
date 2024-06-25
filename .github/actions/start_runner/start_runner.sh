@@ -37,7 +37,7 @@ if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
 fi
 
 echo "Starting Docker container..."
-docker run --rm -d --privileged --name $CONTAINER_NAME \
+docker run --privileged --name $CONTAINER_NAME \
     -e RUNNER_NAME="$RUNNER_NAME" \
     -e ACCESS_TOKEN="$ACCESS_TOKEN" \
     -e RUNNER_GROUP="$RUNNER_GROUP" \
