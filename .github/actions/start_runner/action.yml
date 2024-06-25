@@ -1,5 +1,17 @@
 name: 'Start Runner'
 description: 'Start a Dockerized GitHub runner'
 runs:
-  using: 'bash'
-  main: 'start_runner.sh'
+  using: 'composite'
+  steps:
+    - run: bash ${{ github.action_path }}/start_runner.sh start
+      shell: bash
+      env:
+        ACCESS_TOKEN: ${{ secrets.CREATE_RUNNER_TOKEN }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        UUID: ${{ inputs.UUID }}
+
+inputs:
+  UUID:
+    description: 'Unique identifier for the runner'
+    required: true
