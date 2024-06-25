@@ -3,5 +3,16 @@ description: 'Log in to AWS ECR'
 runs:
   using: 'composite'
   steps:
-    - run: bash login_to_ecr.sh
+    - run: bash ${{ github.action_path }}/login_to_ecr.sh
       shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+
+inputs:
+  AWS_ACCESS_KEY_ID:
+    description: 'AWS Access Key ID'
+    required: true
+  AWS_SECRET_ACCESS_KEY:
+    description: 'AWS Secret Access Key'
+    required: true
