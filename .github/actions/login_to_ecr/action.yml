@@ -1,5 +1,7 @@
 name: 'Log in to ECR'
 description: 'Log in to AWS ECR'
 runs:
-  using: 'bash'
-  main: 'login_to_ecr.sh'
+  using: 'composite'
+  steps:
+    - run: bash login_to_ecr.sh
+      shell: bash
