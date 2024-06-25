@@ -4,7 +4,7 @@ runs:
   using: 'composite'
   steps:
     - run: |
-        bash ${{ github.action_path }}/start_runner.sh start
+        bash ${{ github.action_path }}/start_runner.sh
       shell: bash
       env:
         UUID: ${{ inputs.UUID }}
