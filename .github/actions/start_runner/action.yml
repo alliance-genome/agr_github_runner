@@ -12,9 +12,6 @@ runs:
         UUID: ${{ inputs.UUID }}
 
 inputs:
-  command:
-    description: 'Command to execute (start or stop)'
-    required: true
   UUID:
     description: 'Unique identifier for the runner'
     required: true
