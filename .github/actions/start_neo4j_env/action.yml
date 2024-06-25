@@ -3,5 +3,5 @@ description: 'Start Neo4j environment with specified settings'
 runs:
   using: 'composite'
   steps:
-    - run: bash start_neo4j_env.sh
+    - run: bash ${{ github.action_path }}/start_neo4j_env.sh
       shell: bash
