@@ -1,0 +1,5 @@
+name: 'Start Neo4j Env'
+description: 'Start Neo4j environment'
+runs:
+  using: 'bash'
+  main: 'start_neo4j_env.sh'

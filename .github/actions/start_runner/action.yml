@@ -1,0 +1,5 @@
+name: 'Start Runner'
+description: 'Start a Dockerized GitHub runner'
+runs:
+  using: 'bash'
+  main: 'start_runner.sh'

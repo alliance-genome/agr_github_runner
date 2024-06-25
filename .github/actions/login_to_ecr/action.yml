@@ -1,0 +1,5 @@
+name: 'Log in to ECR'
+description: 'Log in to AWS ECR'
+runs:
+  using: 'bash'
+  main: 'login_to_ecr.sh'
