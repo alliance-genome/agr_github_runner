@@ -24,7 +24,7 @@ while docker ps --format '{{.Names}}' | grep -q "^${RUNNER_NAME_PREFIX}-${suffix
     ((suffix++))
 done
 RUNNER_NAME="${RUNNER_NAME_PREFIX}-${suffix}"
-CONTAINER_NAME="github-org-runner-${suffix}"
+CONTAINER_NAME="flysql26-${suffix}"
 
 echo "Generated RUNNER_NAME: $RUNNER_NAME"
 echo "Generated CONTAINER_NAME: $CONTAINER_NAME"
