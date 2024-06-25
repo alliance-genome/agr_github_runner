@@ -1,8 +1,8 @@
 #!/bin/bash
 
-ACCESS_TOKEN="${{ secrets.CREATE_RUNNER_TOKEN }}"
-AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}"
-AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+ACCESS_TOKEN="${ACCESS_TOKEN}"
+AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
+AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
 UUID="${UUID}"
 RUNNER_NAME_PREFIX="flysql26"
 RUNNER_GROUP="Default"
@@ -37,7 +37,7 @@ if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
 fi
 
 echo "Starting Docker container..."
-docker run --privileged --name $CONTAINER_NAME \
+docker run --rm -d --privileged --name $CONTAINER_NAME \
     -e RUNNER_NAME="$RUNNER_NAME" \
     -e ACCESS_TOKEN="$ACCESS_TOKEN" \
     -e RUNNER_GROUP="$RUNNER_GROUP" \
