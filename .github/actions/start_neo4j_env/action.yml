@@ -1,5 +1,7 @@
-name: 'Start Neo4j Env'
-description: 'Start Neo4j environment'
+name: 'Start Neo4j Environment'
+description: 'Start Neo4j environment with specified settings'
 runs:
-  using: 'bash'
-  main: 'start_neo4j_env.sh'
+  using: 'composite'
+  steps:
+    - run: bash start_neo4j_env.sh
+      shell: bash
