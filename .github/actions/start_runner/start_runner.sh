@@ -9,6 +9,7 @@ RUNNER_GROUP="Default"
 LABELS="self-hosted,Linux,X64"
 IMAGE_TAG="latest"
 ORG_NAME="alliance-genome"
+RUNNER_UID=1001  # Non-root user ID inside the container
 
 echo "Using the following settings:"
 echo "ACCESS_TOKEN: <hidden>"
@@ -37,7 +38,7 @@ if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
 fi
 
 echo "Starting Docker container..."
-docker run --rm -d --privileged --name $CONTAINER_NAME \
+docker run --user $RUNNER_UID --rm -d --privileged --name $CONTAINER_NAME \
     -e RUNNER_NAME="$RUNNER_NAME" \
     -e ACCESS_TOKEN="$ACCESS_TOKEN" \
     -e RUNNER_GROUP="$RUNNER_GROUP" \
@@ -49,6 +50,7 @@ docker run --rm -d --privileged --name $CONTAINER_NAME \
     -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
     -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
     -e START_DOCKER_SERVICE=true \
+    -e RUN_AS_ROOT="false" \
     myoung34/github-runner:$IMAGE_TAG
 
 if [ $? -eq 0 ]; then
