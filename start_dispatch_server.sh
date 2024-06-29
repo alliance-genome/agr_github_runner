@@ -9,11 +9,10 @@ function start_dispatch_server {
     ORG_NAME="alliance-genome"
     IMAGE_TAG="latest"
     REPO_URL="https://github.com/alliance-genome"
-    RUNNER_UID=1001
+    RUNNER_UID=1001  # Non-root user ID inside the container
 
-    echo "Using the following settings:"
+    echo "Using the following settings (excluding ACCESS_TOKEN):"
     echo "DISPATCH_NAME_PREFIX: $DISPATCH_NAME_PREFIX"
-    echo "ACCESS_TOKEN: <hidden>"
     echo "RUNNER_GROUP: $RUNNER_GROUP"
     echo "LABELS: $LABELS"
     echo "ORG_NAME: $ORG_NAME"
@@ -43,7 +42,6 @@ function start_dispatch_server {
         -e REPO_URL="$REPO_URL" \
         -e LABELS="$LABELS" \
         -e RUN_AS_ROOT="false" \
-        -v /var/run/docker.sock:/var/run/docker.sock \
         myoung34/github-runner:$IMAGE_TAG
 
     if [ $? -eq 0 ]; then

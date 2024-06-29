@@ -32,39 +32,25 @@ echo "Generated CONTAINER_NAME: $CONTAINER_NAME"
 
 LABELS="${LABELS},${UUID}"
 
-if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
-    echo "Removing existing container with name $CONTAINER_NAME"
-    docker rm -f $CONTAINER_NAME
-fi
+echo "Sending request to runner manager..."
+response=$(curl -s -X POST http://localhost:5000/start-runner -H "Content-Type: application/json" -d '{
+    "container_name": "'"$CONTAINER_NAME"'",
+    "image_tag": "'"$IMAGE_TAG"'",
+    "labels": "'"$LABELS"'",
+    "access_token": "'"$ACCESS_TOKEN"'",
+    "runner_name": "'"$RUNNER_NAME"'",
+    "runner_group": "'"$RUNNER_GROUP"'",
+    "runner_scope": "org",
+    "org_name": "'"$ORG_NAME"'",
+    "repo_url": "https://github.com/alliance-genome",
+    "aws_access_key_id": "'"$AWS_ACCESS_KEY_ID"'",
+    "aws_secret_access_key": "'"$AWS_SECRET_ACCESS_KEY"'"
+}')
 
-echo "Starting Docker container..."
-docker run --user $RUNNER_UID --rm -d --privileged --name $CONTAINER_NAME \
-    -e RUNNER_NAME="$RUNNER_NAME" \
-    -e ACCESS_TOKEN="$ACCESS_TOKEN" \
-    -e RUNNER_GROUP="$RUNNER_GROUP" \
-    -e RUNNER_SCOPE="org" \
-    -e DISABLE_AUTO_UPDATE="true" \
-    -e ORG_NAME="$ORG_NAME" \
-    -e LABELS="$LABELS" \
-    -e EPHEMERAL=1 \
-    -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
-    -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
-    -e START_DOCKER_SERVICE=true \
-    -e RUN_AS_ROOT="false" \
-    myoung34/github-runner:$IMAGE_TAG
-
-if [ $? -eq 0 ]; then
-    echo "Docker container $CONTAINER_NAME started successfully."
+if [[ $response == *"Runner started successfully"* ]]; then
+    echo "Runner container $CONTAINER_NAME started successfully."
 else
-    echo "Failed to start Docker container $CONTAINER_NAME."
+    echo "Failed to start runner container $CONTAINER_NAME."
+    echo "Response: $response"
     exit 1
-fi
-
-sleep 5
-
-if ! docker ps --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
-    echo "Container $CONTAINER_NAME has stopped unexpectedly. Fetching logs..."
-    docker logs $CONTAINER_NAME
-else
-    echo "Container $CONTAINER_NAME is running."
 fi
