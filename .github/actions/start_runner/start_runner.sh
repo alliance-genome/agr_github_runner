@@ -38,8 +38,9 @@ echo "Generated CONTAINER_NAME: $CONTAINER_NAME"
 
 LABELS="${LABELS},${UUID}"
 
+# Send request to runner manager and capture response and HTTP status code
 echo "Sending request to runner manager..."
-response=$(curl -s -X POST http://localhost:5000/start-runner -H "Content-Type: application/json" -d '{
+response=$(curl -s -o response.txt -w "%{http_code}" -X POST http://localhost:5000/start-runner -H "Content-Type: application/json" -d '{
     "container_name": "'"$CONTAINER_NAME"'",
     "image_tag": "'"$IMAGE_TAG"'",
     "labels": "'"$LABELS"'",
@@ -53,10 +54,15 @@ response=$(curl -s -X POST http://localhost:5000/start-runner -H "Content-Type: 
     "aws_secret_access_key": "'"$AWS_SECRET_ACCESS_KEY"'"
 }')
 
-if [[ $response == *"Runner started successfully"* ]]; then
+# Read the response from the file
+response_body=$(<response.txt)
+
+# Check if the runner was started successfully
+if [[ $response == 200 && $response_body == *"Runner started successfully"* ]]; then
     echo "Runner container $CONTAINER_NAME started successfully."
 else
     echo "Failed to start runner container $CONTAINER_NAME."
-    echo "Response: $response"
+    echo "HTTP Response Code: $response"
+    echo "Response Body: $response_body"
     exit 1
 fi
