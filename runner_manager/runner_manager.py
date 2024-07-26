@@ -39,6 +39,7 @@ def start_runner():
             '-e', f'ORG_NAME={org_name}',
             '-e', f'REPO_URL={repo_url}',
             '-e', 'EPHEMERAL=1',
+            '-v', '/var/run/docker.sock:/var/run/docker.sock',
             '-e', f'LABELS={labels}',
             '-e', 'RUN_AS_ROOT=false',
             '-e', f'AWS_ACCESS_KEY_ID={aws_access_key_id}',
