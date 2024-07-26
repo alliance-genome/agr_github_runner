@@ -9,7 +9,6 @@ RUNNER_GROUP="Default"
 LABELS="self-hosted,Linux,X64"
 IMAGE_TAG="latest"
 ORG_NAME="alliance-genome"
-RUNNER_UID=1001  # Non-root user ID inside the container
 
 echo "Using the following settings:"
 echo "ACCESS_TOKEN: <hidden>"
@@ -20,12 +19,8 @@ echo "IMAGE_TAG: $IMAGE_TAG"
 echo "ORG_NAME: $ORG_NAME"
 echo "UUID: $UUID"
 
-suffix=1
-while docker ps --format '{{.Names}}' | grep -q "^${RUNNER_NAME_PREFIX}-${suffix}$"; do
-    ((suffix++))
-done
-RUNNER_NAME="${RUNNER_NAME_PREFIX}-${suffix}"
-CONTAINER_NAME="flysql26-${suffix}"
+RUNNER_NAME="${RUNNER_NAME_PREFIX}-${UUID}"
+CONTAINER_NAME="flysql26-${UUID}"
 
 echo "Generated RUNNER_NAME: $RUNNER_NAME"
 echo "Generated CONTAINER_NAME: $CONTAINER_NAME"
@@ -33,7 +28,7 @@ echo "Generated CONTAINER_NAME: $CONTAINER_NAME"
 LABELS="${LABELS},${UUID}"
 
 echo "Sending request to runner manager..."
-response=$(curl -s -X POST http://localhost:5000/start-runner -H "Content-Type: application/json" -d '{
+response=$(curl -s -X POST http://<LOCAL_RUNNER_MANAGER_IP>:5000/start-runner -H "Content-Type: application/json" -d '{
     "container_name": "'"$CONTAINER_NAME"'",
     "image_tag": "'"$IMAGE_TAG"'",
     "labels": "'"$LABELS"'",

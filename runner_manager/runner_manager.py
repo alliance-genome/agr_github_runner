@@ -3,6 +3,24 @@ import subprocess
 
 app = Flask(__name__)
 
+def is_dind_running():
+    try:
+        result = subprocess.run(['docker', 'ps', '--filter', 'ancestor=docker:27.1.1-dind-rootless', '--format', '{{.ID}}'], capture_output=True, text=True)
+        container_id = result.stdout.strip()
+        return container_id if container_id else None
+    except subprocess.CalledProcessError:
+        return None
+
+def start_dind():
+    try:
+        subprocess.run([
+            'docker', 'run', '--rm', '-d', '--name', 'dind-instance',
+            '--privileged', 'docker:27.1.1-dind-rootless'
+        ], check=True)
+        return is_dind_running()
+    except subprocess.CalledProcessError:
+        return None
+
 @app.route('/start-runner', methods=['POST'])
 def start_runner():
     data = request.json
@@ -27,11 +45,17 @@ def start_runner():
     repo_url = data.get('repo_url')
     aws_access_key_id = data.get('aws_access_key_id')
     aws_secret_access_key = data.get('aws_secret_access_key')
-    uid = 1001  # Non-root user ID inside the container
+
+    dind_container_id = is_dind_running()
+    if not dind_container_id:
+        dind_container_id = start_dind()
+        if not dind_container_id:
+            return jsonify({'error': 'Failed to start DinD instance'}), 500
 
     try:
         subprocess.run([
-            'docker', 'run', '--user', str(uid), '--rm', '-d', '--name', container_name,
+            'docker', 'exec', '-d', dind_container_id,
+            'docker', 'run', '--rm', '--name', container_name,
             '-e', f'RUNNER_NAME={runner_name}',
             '-e', f'ACCESS_TOKEN={access_token}',
             '-e', f'RUNNER_GROUP={runner_group}',
@@ -39,14 +63,12 @@ def start_runner():
             '-e', f'ORG_NAME={org_name}',
             '-e', f'REPO_URL={repo_url}',
             '-e', 'EPHEMERAL=1',
-            '-v', '/var/run/docker.sock:/var/run/docker.sock',
             '-e', f'LABELS={labels}',
-            '-e', 'RUN_AS_ROOT=false',
             '-e', f'AWS_ACCESS_KEY_ID={aws_access_key_id}',
             '-e', f'AWS_SECRET_ACCESS_KEY={aws_secret_access_key}',
             'myoung34/github-runner:' + image_tag
         ], check=True)
-        return jsonify({'status': 'Runner started successfully'}), 200
+        return jsonify({'status': 'Runner started successfully within DinD'}), 200
     except subprocess.CalledProcessError as e:
         return jsonify({'error': str(e)}), 500
 
