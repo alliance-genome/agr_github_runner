@@ -38,9 +38,13 @@ echo "Generated CONTAINER_NAME: $CONTAINER_NAME"
 
 LABELS="${LABELS},${UUID}"
 
+# Ensure a writable temporary directory for response
+TEMP_DIR=$(mktemp -d)
+RESPONSE_FILE="$TEMP_DIR/response.txt"
+
 # Send request to runner manager and capture response and HTTP status code
 echo "Sending request to runner manager..."
-response=$(curl -s -o response.txt -w "%{http_code}" -X POST http://localhost:5000/start-runner -H "Content-Type: application/json" -d '{
+response=$(curl -s -o "$RESPONSE_FILE" -w "%{http_code}" -X POST http://localhost:5000/start-runner -H "Content-Type: application/json" -d '{
     "container_name": "'"$CONTAINER_NAME"'",
     "image_tag": "'"$IMAGE_TAG"'",
     "labels": "'"$LABELS"'",
@@ -55,7 +59,7 @@ response=$(curl -s -o response.txt -w "%{http_code}" -X POST http://localhost:50
 }')
 
 # Read the response from the file
-response_body=$(<response.txt)
+response_body=$(<"$RESPONSE_FILE")
 
 # Check if the runner was started successfully
 if [[ $response == 200 && $response_body == *"Runner started successfully"* ]]; then
@@ -64,5 +68,7 @@ else
     echo "Failed to start runner container $CONTAINER_NAME."
     echo "HTTP Response Code: $response"
     echo "Response Body: $response_body"
+    echo "Script executed in directory: $(pwd)"
+    echo "Response file location: $RESPONSE_FILE"
     exit 1
 fi
