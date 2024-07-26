@@ -11,6 +11,16 @@ IMAGE_TAG="latest"
 ORG_NAME="alliance-genome"
 RUNNER_UID=1001  # Non-root user ID inside the container
 
+# Print diagnostic information
+echo "Diagnostic Information:"
+echo "Hostname: $(hostname)"
+echo "Current User: $(whoami)"
+echo "Current Directory: $(pwd)"
+echo "Operating System: $(uname -a)"
+echo "Docker Version: $(docker --version)"
+echo "Docker Info: $(docker info --format '{{json .}}')"
+echo
+
 echo "Using the following settings:"
 echo "ACCESS_TOKEN: <hidden>"
 echo "RUNNER_NAME_PREFIX: $RUNNER_NAME_PREFIX"
@@ -20,12 +30,8 @@ echo "IMAGE_TAG: $IMAGE_TAG"
 echo "ORG_NAME: $ORG_NAME"
 echo "UUID: $UUID"
 
-suffix=1
-while docker ps --format '{{.Names}}' | grep -q "^${RUNNER_NAME_PREFIX}-${suffix}$"; do
-    ((suffix++))
-done
-RUNNER_NAME="${RUNNER_NAME_PREFIX}-${suffix}"
-CONTAINER_NAME="flysql26-${suffix}"
+RUNNER_NAME="${RUNNER_NAME_PREFIX}-${UUID}"
+CONTAINER_NAME="flysql26-${UUID}"
 
 echo "Generated RUNNER_NAME: $RUNNER_NAME"
 echo "Generated CONTAINER_NAME: $CONTAINER_NAME"
