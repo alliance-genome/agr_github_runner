@@ -6,6 +6,16 @@ app = Flask(__name__)
 @app.route('/start-runner', methods=['POST'])
 def start_runner():
     data = request.json
+    required_fields = [
+        'container_name', 'image_tag', 'labels', 'access_token',
+        'runner_name', 'runner_group', 'runner_scope', 'org_name',
+        'repo_url', 'aws_access_key_id', 'aws_secret_access_key'
+    ]
+    
+    missing_fields = [field for field in required_fields if field not in data]
+    if missing_fields:
+        return jsonify({'error': 'Missing required parameters', 'missing': missing_fields}), 400
+
     container_name = data.get('container_name')
     image_tag = data.get('image_tag')
     labels = data.get('labels')
@@ -19,12 +29,9 @@ def start_runner():
     aws_secret_access_key = data.get('aws_secret_access_key')
     uid = 1001  # Non-root user ID inside the container
 
-    if not all([container_name, image_tag, labels, access_token, runner_name, runner_group, runner_scope, org_name, repo_url, aws_access_key_id, aws_secret_access_key]):
-        return jsonify({'error': 'Missing required parameters'}), 400
-
     try:
         subprocess.run([
-            'docker', 'run', '--user', str(uid), '--rm', '-d', '--privileged', '--name', container_name,
+            'docker', 'run', '--user', str(uid), '--rm', '-d', '--name', container_name,
             '-e', f'RUNNER_NAME={runner_name}',
             '-e', f'ACCESS_TOKEN={access_token}',
             '-e', f'RUNNER_GROUP={runner_group}',
