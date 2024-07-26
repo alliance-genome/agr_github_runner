@@ -43,6 +43,7 @@ function start_dispatch_server {
         -e LABELS="$LABELS" \
         -e EPHEMERAL="true" \
         -e RUN_AS_ROOT="true" \
+        -v /var/run/docker.sock:/var/run/docker.sock \
         myoung34/github-runner:$IMAGE_TAG
 
     if [ $? -eq 0 ]; then
