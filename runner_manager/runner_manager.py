@@ -38,6 +38,7 @@ def start_runner():
             '-e', f'RUNNER_SCOPE={runner_scope}',
             '-e', f'ORG_NAME={org_name}',
             '-e', f'REPO_URL={repo_url}',
+            '-e', 'EPHEMERAL=1',
             '-e', f'LABELS={labels}',
             '-e', 'RUN_AS_ROOT=false',
             '-e', f'AWS_ACCESS_KEY_ID={aws_access_key_id}',

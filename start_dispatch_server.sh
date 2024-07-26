@@ -39,6 +39,7 @@ function start_dispatch_server {
         -e RUNNER_GROUP="$RUNNER_GROUP" \
         -e RUNNER_SCOPE="org" \
         -e ORG_NAME="$ORG_NAME" \
+        -e START_DOCKER_SERVICE="true" \
         -e REPO_URL="$REPO_URL" \
         -e LABELS="$LABELS" \
         -e RUN_AS_ROOT="false" \
