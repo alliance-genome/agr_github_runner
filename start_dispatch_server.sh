@@ -33,7 +33,7 @@ function start_dispatch_server {
     fi
 
     echo "Starting Docker container..."
-    docker run --user $RUNNER_UID -d --name $CONTAINER_NAME --restart unless-stopped \
+    docker run -d --name $CONTAINER_NAME --restart unless-stopped \
         -e RUNNER_NAME="$DISPATCH_NAME" \
         -e ACCESS_TOKEN="$ACCESS_TOKEN" \
         -e RUNNER_GROUP="$RUNNER_GROUP" \
@@ -42,7 +42,6 @@ function start_dispatch_server {
         -e START_DOCKER_SERVICE="true" \
         -e REPO_URL="$REPO_URL" \
         -e LABELS="$LABELS" \
-        -e RUN_AS_ROOT="false" \
         myoung34/github-runner:$IMAGE_TAG
 
     if [ $? -eq 0 ]; then
